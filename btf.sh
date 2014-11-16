@@ -42,7 +42,7 @@ check_dependencies()
 check_dependencies
 
 case $1 in
-	"install" ) echo "not implemented yet.";; # work out a way to get path script is running from and cp it to /usr/local/bin
+	"install" ) echo "not implemented yet.";; # get path script is running from and cp it to /usr/local/bin
 	"" )
 		echo "Error: at least one argument is required."
 		exit 0;;
