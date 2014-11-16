@@ -35,8 +35,6 @@ check_pass()
 install_wmctrl()
 {
 	( sudo apt-get install -y wmctrl ) > /dev/null
-	echo "i did it"
-	# sudo -K
 }
 
 install_btf()
@@ -61,13 +59,12 @@ check_dependencies()
 	for i in "${dep_array[@]}"
 	do
 		if ( ! command -v $i ) > /dev/null ; then
-			# echo $i
 			req_dep+=($i)
 		fi
 	done
 
 	if [ -z "${req_dep[@]}" ] ; then
-		echo "no dependencies needed"
+		echo ""
 	else
 		if ( ! zenity --question --title=Installation --text="One or more dependency is required." ) ; then
 			exit 0
@@ -77,12 +74,27 @@ check_dependencies()
 	fi
 }
 
+help_info()
+{
+	echo -e "  Usage: Run script with 2 arguments (2nd optional)"
+	echo -e "  first argument is the name of the process to be executed e.g. Firefox"
+	echo -e "  second is options for that process, e.g. --new-window\n"
+	echo -e "  A working example should look like this: btf firefox --new-window\n"
+}
+
 get_input()
 {
-	if [[ $1 = "" ]] > /dev/null ; then
-		( zenity --warning --title=Program Launch --text="You didn't specify the application to be loaded. e.g. btf firefox" )
-		exit 0
-	fi
+	case $1 in 
+		"" )
+			( zenity --warning --title=Program Launch --text="You didn't specify the application to be loaded. e.g. btf firefox" )
+			help_info
+			exit 0			
+			;;
+		"--help" )
+			help_info
+			exit 0
+			;;
+	esac
 
 	if ( ! $1 $2 ) ; then
 		echo "command failure"
@@ -99,9 +111,7 @@ loop()
 {
 	while [[ $winID = $active_winid ]] ; do
 		get_winid
-		# echo "still running"
 	done
-	# echo $active_winid
 	wmctrl -ia $active_winid
 	exit 0
 }
