@@ -10,10 +10,8 @@ auth()
 {
 	pwd_auth=$(zenity --password --title=Authentication)
 	if ( ! echo $pwd_auth | sudo -S cat /dev/null ) 2>/dev/null ; then
-		# ( zenity --warning --text="false" )
 		return 1
 	else
-		# ( zenity --warning --text="true" )
 		return 0
 	fi
 }
