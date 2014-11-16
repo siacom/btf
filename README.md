@@ -1,5 +1,6 @@
 
-after extracting the zip:
+After extracting the zip, run the following:
+
 chmod +x btf.sh
 ./btf.sh
 
