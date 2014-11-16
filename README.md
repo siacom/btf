@@ -1,8 +1,7 @@
 
 After extracting the zip, run the following:
 
-chmod +x btf.sh
-./btf.sh
+chmod +x btf.sh && ./btf.sh
 
 This will ask for your password to install the wmctrl dependency.
 
