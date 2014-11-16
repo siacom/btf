@@ -8,13 +8,19 @@ count=0
 
 auth()
 {
-	pwd_auth=$( zenity --password --title=Authentication )
+	pwd_auth=$(zenity --password --title=Authentication)
+	if ( ! echo $pwd_auth | sudo -S cat /dev/null ) 2>/dev/null ; then
+		# ( zenity --warning --text="false" )
+		return 1
+	else
+		# ( zenity --warning --text="true" )
+		return 0
+	fi
 }
 
 check_install()
 {
-	auth
-	if ( ! echo $pwd_auth | sudo -S cat /dev/null ) 2>/dev/null ; then
+	if ( ! $(auth) ) ; then
 		if [[ $pwd_auth = "" ]] ; then
 			exit 0
 		else
@@ -30,7 +36,7 @@ check_install()
 
 check_dependencies()
 {
-	if ( ! command -v wmctrl ) ; then
+	if ( ! command -v wmctrl ) > /dev/null ; then
 		if ( ! zenity --question --title=Installation --text="A dependency is required before this script can run." ) ; then
 			exit 0
 		else
@@ -44,7 +50,7 @@ check_dependencies
 case $1 in
 	"install" ) echo "not implemented yet.";; # get path script is running from and cp it to /usr/local/bin
 	"" )
-		echo "Error: at least one argument is required."
+		( zenity --warning --title=Program Launch --text="You didn't specify the application to be loaded. e.g. btf firefox" )
 		exit 0;;
 esac
 
