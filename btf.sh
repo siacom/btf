@@ -76,6 +76,9 @@ check_dependencies()
 
 help_info()
 {
+	clear
+	echo -e "  Help Information"
+	echo -e "  ================\n"
 	echo -e "  Usage: Run script with 2 arguments (2nd optional)"
 	echo -e "  first argument is the name of the process to be executed e.g. Firefox"
 	echo -e "  second is options for that process, e.g. --new-window\n"
