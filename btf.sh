@@ -5,6 +5,17 @@
 # first argument is the name of the process to be executed e.g. Firefox
 # second is options for that process, e.g. --new-window
 
+NC='\e[0m' # No Color
+red='\e[0;31m'
+green='\e[0;32m'
+blue='\e[0;34m'
+cyan='\e[0;36m'
+yellow='\e[1;33m'
+lpurple='\e[1;35m'
+purple='\e[0;35m'
+lblue='\e[1;34m'
+rust='\e[0;33m'
+
 pid=`pgrep "$1"`
 winID=`wmctrl -lp | grep "$pid" | tail -1 | cut -f 1 -d " "`
 SCRIPT=$(readlink -f $0)
@@ -76,31 +87,34 @@ check_dependencies()
 
 help_info()
 {
-	clear
-	echo -e "  Help Information"
-	echo -e "  ================\n"
-	echo -e "  Usage: Run script with 2 arguments (2nd optional)"
-	echo -e "  first argument is the name of the process to be executed e.g. Firefox"
-	echo -e "  second is options for that process, e.g. --new-window\n"
-	echo -e "  A working example should look like this: btf firefox --new-window\n"
+	echo -e "  ${yellow}Help Information${NC}"
+	echo -e "  ${yellow}================${NC}\n"
+	echo -e "  ${green}Usage${NC}: Run script with 2 arguments (2nd optional)"
+	echo -e "  first argument is the name of the process to be executed e.g. ${lpurple}firefox${NC}"
+	echo -e "  second is options for that process, e.g. ${lpurple}--new-window${NC}\n"
+	echo -e "  A working example should look like this: ${lpurple}btf firefox --new-window${NC}\n"
 }
 
 get_input()
 {
-	case $1 in 
-		"" )
-			( zenity --warning --title=Program Launch --text="You didn't specify the application to be loaded. e.g. btf firefox" )
-			help_info
-			exit 0			
-			;;
-		"--help" )
-			help_info
-			exit 0
-			;;
-	esac
+	if [[ -z $1 ]] ; then
+		( zenity --warning --title=Program Launch --text="You didn't specify the application to be loaded. e.g. btf firefox" )
+		clear
+		help_info
+		exit 0
+	elif [[ -n $1 && -z $2 ]] ; then
+		launch $1
+	elif [[ -n $1 && -n $2 ]] ; then
+		launch $1 $2
+	fi
+}
 
+launch()
+{
 	if ( ! $1 $2 ) ; then
-		echo "command failure"
+		# clear
+		echo -e "\n${red}One or more arguments entered failed, see output above${NC}\n"
+		help_info
 		exit 0
 	fi
 }
