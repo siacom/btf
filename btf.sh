@@ -15,10 +15,13 @@ lpurple='\e[1;35m'
 purple='\e[0;35m'
 lblue='\e[1;34m'
 rust='\e[0;33m'
-
-pid=`pgrep "$1"`
-winID=`wmctrl -lp | grep "$pid" | tail -1 | cut -f 1 -d " "`
 SCRIPT=$(readlink -f $0)
+
+vars()
+{
+	pid=`pgrep "$1"`
+	winID=`wmctrl -lp | grep "$pid" | tail -1 | cut -f 1 -d " "`
+}
 
 auth()
 {
@@ -41,27 +44,42 @@ check_pass()
 		( zenity --warning --text="You entered an incorrect password, please try again!" )
 		auth
 	fi
+	return 0
 }
 
 install_wmctrl()
 {
 	( sudo apt-get install -y wmctrl ) > /dev/null
+	echo "wmctrl was successfully installed"
 }
 
 install_btf()
 {
-	sudo rm -rf /usr/local/bin/btf
-	sudo ln -s $SCRIPT /usr/local/bin/btf
+	# sudo rm -rf /usr/local/bin/btf
+	sudo cp -f $SCRIPT /usr/btf
+	sudo mv -f /usr/btf /usr/local/bin/btf
 	sudo chmod +x /usr/local/bin/btf
+	echo "btf was successfully installed"
+}
+
+update()
+{
+	cd ~/Downloads
+	wget https://github.com/siacom/btf/archive/master.zip
+	unzip btf-master.zip
+	sudo mv -f ~/Downloads/btf-master/btf.sh /usr/local/bin/btf
+	sudo rm -rf ~/Downloads/btf-master.zip
+	sudo rm -rf ~/Downloads/btf-master/
+
 }
 
 check_install()
 {
-	if auth = 1 ; then
-		for install in $1; do
-			install_$install
-		done
-	fi
+	( sudo_status || ( auth ) )
+
+	for install in $1; do
+		install_$install
+	done
 }
 
 check_dependencies()
@@ -98,10 +116,10 @@ help_info()
 get_input()
 {
 	if [[ -z $1 ]] ; then
-		( zenity --warning --title=Program Launch --text="You didn't specify the application to be loaded. e.g. btf firefox" )
-		clear
-		help_info
-		exit 0
+		# ( zenity --warning --title=Program Launch --text="You didn't specify the application to be loaded. e.g. btf firefox" )
+		# clear
+		launch
+		# exit 0
 	elif [[ -n $1 && -z $2 ]] ; then
 		launch $1
 	elif [[ -n $1 && -n $2 ]] ; then
@@ -109,14 +127,38 @@ get_input()
 	fi
 }
 
+sudo_status()
+{
+	if ( ! echo $1 | sudo -S cat /dev/null ) 2>/dev/null ; then
+		return 1
+	else
+		return 0
+	fi
+}
+
 launch()
 {
+	check_dependencies
+
+	case $1 in
+			"--help" )
+			clear
+			help_info
+			exit 0
+			;;
+			"" )
+			echo -e "${green}Type ${purple}btf --help${NC} ${green}to see the usage information.${NC}"
+			exit 0
+			;;
+	esac
+
 	if ( ! $1 $2 ) ; then
-		# clear
 		echo -e "\n${red}One or more arguments entered failed, see output above${NC}\n"
 		help_info
 		exit 0
 	fi
+
+	vars
 }
 
 get_winid()
@@ -133,7 +175,6 @@ loop()
 	exit 0
 }
 
-check_dependencies
 get_input $1 $2
 get_winid
 loop
