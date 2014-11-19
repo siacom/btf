@@ -54,7 +54,6 @@ install_wmctrl()
 
 install_btf()
 {
-	# sudo rm -rf /usr/local/bin/btf
 	sudo cp -f $SCRIPT /usr/btf
 	sudo mv -f /usr/btf /usr/local/bin/btf
 	sudo chmod +x /usr/local/bin/btf
@@ -100,6 +99,15 @@ check_dependencies()
 	fi
 }
 
+check_diff()
+{
+	if ( ! diff --brief $SCRIPT /usr/local/bin/btf ) > /dev/null ; then
+		install_btf
+		echo -e "${red}btf was updated${NC}"
+		exit 0
+	fi
+}
+
 help_info()
 {
 	echo -e "  ${yellow}Help Information${NC}"
@@ -134,6 +142,7 @@ sudo_status()
 launch()
 {
 	check_dependencies
+	check_diff
 
 	case $1 in
 			"--help" )
