@@ -50,7 +50,6 @@ check_pass()
 install_wmctrl()
 {
 	( sudo apt-get install -y wmctrl ) > /dev/null
-	echo "wmctrl was successfully installed"
 }
 
 install_btf()
@@ -59,7 +58,6 @@ install_btf()
 	sudo cp -f $SCRIPT /usr/btf
 	sudo mv -f /usr/btf /usr/local/bin/btf
 	sudo chmod +x /usr/local/bin/btf
-	echo "btf was successfully installed"
 }
 
 update()
@@ -70,7 +68,6 @@ update()
 	sudo mv -f ~/Downloads/btf-master/btf.sh /usr/local/bin/btf
 	sudo rm -rf ~/Downloads/btf-master.zip
 	sudo rm -rf ~/Downloads/btf-master/
-
 }
 
 check_install()
@@ -92,13 +89,13 @@ check_dependencies()
 		fi
 	done
 
-	if [ -z "${req_dep[@]}" ] ; then
-		echo ""
-	else
+	if [[ "${req_dep[@]}" != "" ]] ; then
 		if ( ! zenity --question --title=Installation --text="One or more dependency is required." ) ; then
 			exit 0
 		else
 			check_install ${req_dep[@]}
+			echo -e "${green}btf was successfully installed, type ${purple}btf --help${NC} to see usage details"
+			exit 0
 		fi
 	fi
 }
@@ -117,9 +114,7 @@ get_input()
 {
 	if [[ -z $1 ]] ; then
 		# ( zenity --warning --title=Program Launch --text="You didn't specify the application to be loaded. e.g. btf firefox" )
-		# clear
 		launch
-		# exit 0
 	elif [[ -n $1 && -z $2 ]] ; then
 		launch $1
 	elif [[ -n $1 && -n $2 ]] ; then
@@ -157,7 +152,6 @@ launch()
 		help_info
 		exit 0
 	fi
-
 	vars
 }
 
